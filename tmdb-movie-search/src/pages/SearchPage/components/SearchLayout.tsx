@@ -49,6 +49,9 @@ export function SearchLayout({
   suggestions,
   currentPage,
   onPageChange,
+  history,
+  onHistorySelect,
+  onClearHistory,
 }: {
   query: string
   searchedQuery: string
@@ -61,6 +64,9 @@ export function SearchLayout({
   suggestions: UseQueryResult<TmdbSearchMovieResponse, unknown>
   currentPage: number
   onPageChange: (page: number) => void
+  history: string[]
+  onHistorySelect: (query: string) => void
+  onClearHistory: () => void
 }) {
   return (
     <Container>
@@ -76,6 +82,9 @@ export function SearchLayout({
         isFiltersOpen={isFiltersOpen}
         onFiltersOpenChange={onFiltersOpenChange}
         suggestions={suggestions}
+        history={history}
+        onHistorySelect={onHistorySelect}
+        onClearHistory={onClearHistory}
       />
       <ResultsSection
         search={search}

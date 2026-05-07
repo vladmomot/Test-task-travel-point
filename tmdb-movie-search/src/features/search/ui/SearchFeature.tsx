@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMovieSearch } from '../hooks/useMovieSearch'
 import { useMovieSuggestions } from '../hooks/useMovieSuggestions'
 import { DEFAULT_SEARCH_FILTERS, type SearchFilters } from '../types'
 import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue'
 import { SearchLayout } from '../../../pages/SearchPage/components/SearchLayout'
+import { useSearchHistory } from '../hooks/useSearchHistory'
 
 export function SearchFeature() {
   const [query, setQuery] = useState('')
@@ -14,6 +15,7 @@ export function SearchFeature() {
   const debouncedAutocomplete = useDebouncedValue(query, 200)
   const result = useMovieSearch(debouncedQuery, filters)
   const suggestions = useMovieSuggestions(debouncedAutocomplete, filters)
+  const { history, addQuery, clearHistory } = useSearchHistory()
 
   const handleQueryChange = (value: string) => {
     setQuery(value)
@@ -23,6 +25,12 @@ export function SearchFeature() {
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }))
   }
+
+  useEffect(() => {
+    if (!result.isSuccess) return
+    if (!debouncedQuery.trim()) return
+    addQuery(debouncedQuery)
+  }, [addQuery, debouncedQuery, result.isSuccess])
 
   return (
     <SearchLayout
@@ -37,6 +45,9 @@ export function SearchFeature() {
       suggestions={suggestions}
       currentPage={filters.page}
       onPageChange={handlePageChange}
+      history={history}
+      onHistorySelect={handleQueryChange}
+      onClearHistory={clearHistory}
     />
   )
 }

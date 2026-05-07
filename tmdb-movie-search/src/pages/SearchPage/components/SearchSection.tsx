@@ -49,6 +49,63 @@ const SearchInput = styled.input`
 
 const SUGGETIONS_MAX_COUNT = 5
 
+const HistoryRow = styled.div`
+  margin-top: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+`
+
+const HistoryList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    gap: 0.4rem;
+  }
+`
+
+const HistoryChip = styled.button`
+  border: none;
+  background: rgba(118, 75, 162, 0.12);
+  color: #5b3f87;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    width: calc(50% - 0.25rem);
+    text-align: left;
+  }
+`
+
+const ClearHistoryButton = styled.button`
+  border: none;
+  background: transparent;
+  color: #7b66a0;
+  font-size: 0.85rem;
+  cursor: pointer;
+  align-self: flex-start;
+
+  @media (max-width: 768px) {
+    align-self: flex-end;
+  }
+`
+
 export function SearchSection({
   query,
   onQueryChange,
@@ -57,6 +114,9 @@ export function SearchSection({
   isFiltersOpen,
   onFiltersOpenChange,
   suggestions,
+  history,
+  onHistorySelect,
+  onClearHistory,
 }: {
   query: string
   onQueryChange: (value: string) => void
@@ -65,6 +125,9 @@ export function SearchSection({
   isFiltersOpen: boolean
   onFiltersOpenChange: (open: boolean) => void
   suggestions: UseQueryResult<TmdbSearchMovieResponse, unknown>
+  history: string[]
+  onHistorySelect: (query: string) => void
+  onClearHistory: () => void
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
@@ -161,6 +224,27 @@ export function SearchSection({
           isEmpty={hasMinChars && suggestions.isSuccess && items.length === 0}
         />
       </SearchContainer>
+      {history.length > 0 ? (
+        <HistoryRow>
+          <HistoryList>
+            {history.map((h) => (
+              <HistoryChip
+                key={h}
+                type="button"
+                onClick={() => onHistorySelect(h)}
+              >
+                {h}
+              </HistoryChip>
+            ))}
+          </HistoryList>
+          <ClearHistoryButton
+            type="button"
+            onClick={onClearHistory}
+          >
+            Clear history
+          </ClearHistoryButton>
+        </HistoryRow>
+      ) : null}
       <AdvancedFilters
         filters={filters}
         onFiltersChange={onFiltersChange}
