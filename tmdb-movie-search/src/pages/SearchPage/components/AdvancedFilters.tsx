@@ -144,8 +144,15 @@ const CheckboxField = styled.div`
 function updateFilters(
   prev: SearchFilters,
   patch: Partial<SearchFilters>,
+  options: { resetPage?: boolean } = {},
 ): SearchFilters {
-  return { ...prev, ...patch }
+  const { resetPage = true } = options
+
+  return {
+    ...prev,
+    ...patch,
+    ...(resetPage ? { page: DEFAULT_SEARCH_FILTERS.page } : {}),
+  }
 }
 
 const MIN_YEAR = 1900
@@ -309,9 +316,13 @@ export function AdvancedFilters({
               if (!Number.isInteger(page)) return
               if (page < 1) return
               onFiltersChange(
-                updateFilters(filters, {
-                  page,
-                }),
+                updateFilters(
+                  filters,
+                  {
+                    page,
+                  },
+                  { resetPage: false },
+                ),
               )
             }}
             onBlur={() => {

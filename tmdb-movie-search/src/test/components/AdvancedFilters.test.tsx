@@ -60,6 +60,34 @@ describe('AdvancedFilters', () => {
     })
   })
 
+  it('resets page when a search filter changes', () => {
+    const onFiltersChange = vi.fn()
+
+    render(
+      <AdvancedFilters
+        filters={{
+          ...baseFilters,
+          page: 4,
+          region: 'US',
+        }}
+        onFiltersChange={onFiltersChange}
+        open
+        onOpenChange={() => {}}
+      />,
+    )
+
+    fireEvent.change(screen.getByLabelText('Language'), {
+      target: { value: 'fr-FR' },
+    })
+
+    expect(onFiltersChange).toHaveBeenLastCalledWith({
+      ...baseFilters,
+      language: 'fr-FR',
+      region: 'US',
+      page: 1,
+    })
+  })
+
   it('resets filters and draft inputs', () => {
     const onFiltersChange = vi.fn()
     const initialFilters: SearchFilters = {

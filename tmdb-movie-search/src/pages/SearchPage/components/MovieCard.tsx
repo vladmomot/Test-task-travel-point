@@ -14,9 +14,15 @@ const Card = styled.article`
   transition: all 0.3s ease;
   cursor: pointer;
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     transform: translateY(-5px);
     box-shadow: 0 8px 30px rgba(118, 75, 162, 0.2);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(118, 75, 162, 0.2);
+    outline-offset: 4px;
   }
 `
 
@@ -140,6 +146,12 @@ export const MovieCard = memo(function MovieCard({
       role="button"
       tabIndex={0}
       onClick={openMovie}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          openMovie()
+        }
+      }}
       aria-label={`Open movie ${movie.title}`}
     >
       <Poster>
