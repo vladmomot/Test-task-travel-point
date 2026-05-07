@@ -1,16 +1,29 @@
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from '../../shared/ui/ErrorBoundary/ErrorBoundary'
 import { GlobalStyle } from '../styles/GlobalStyle'
-import { SearchProvider } from '../../features/search/context/SearchContext'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+      gcTime: 5 * 60_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
       <GlobalStyle />
-      <BrowserRouter>
-        <SearchProvider>{children}</SearchProvider>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          {children}
+        </BrowserRouter>
+      </QueryClientProvider>
     </ErrorBoundary>
   )
 }

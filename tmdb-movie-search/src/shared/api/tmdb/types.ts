@@ -25,3 +25,12 @@ export type TmdbErrorResponse = {
   status_message?: string
 }
 
+export type TmdbGenre = {
+  id: number
+  name: string
+}
+
+export type TmdbGenreListResponse = {
+  genres: TmdbGenre[]
+}
+

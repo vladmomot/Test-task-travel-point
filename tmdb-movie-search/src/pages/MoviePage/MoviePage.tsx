@@ -14,7 +14,8 @@ export default function MoviePage() {
   return (
     <Wrapper>
       <h2 style={{ marginBottom: 8 }}>Movie page</h2>
-      <p>Navigation works. Movie id: {movieId}</p>
+      <p>Movie id: {movieId}</p>
+      <p>Coming soon...</p>
     </Wrapper>
   )
 }

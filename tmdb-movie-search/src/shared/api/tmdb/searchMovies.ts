@@ -1,6 +1,7 @@
 import { tmdbGet } from './client'
 import type { TmdbSearchMovieResponse } from './types'
 
+
 export type SearchMoviesParams = {
   query: string
   language?: string
@@ -14,4 +15,3 @@ export type SearchMoviesParams = {
 export function searchMovies(params: SearchMoviesParams, signal?: AbortSignal) {
   return tmdbGet<TmdbSearchMovieResponse>('/search/movie', params, signal)
 }
-

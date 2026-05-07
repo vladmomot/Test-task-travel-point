@@ -1,5 +1,7 @@
 import styled from 'styled-components'
-import type { MovieSearchState } from '../../../features/search/hooks/useMovieSearch'
+import type { UseQueryResult } from '@tanstack/react-query'
+import type { TmdbSearchMovieResponse } from '../../../shared/api/tmdb/types'
+import type { SearchFilters } from '../../../features/search/types'
 import { ResultsSection } from './ResultsSection'
 import { SearchSection } from './SearchSection'
 
@@ -35,16 +37,40 @@ const Header = styled.header`
   }
 `
 
-export function SearchLayout({ search }: { search: MovieSearchState }) {
+export function SearchLayout({
+  query,
+  onQueryChange,
+  filters,
+  onFiltersChange,
+  isFiltersOpen,
+  onFiltersOpenChange,
+  search,
+  searchedQuery
+}: {
+  query: string
+  searchedQuery: string
+  onQueryChange: (value: string) => void
+  filters: SearchFilters
+  onFiltersChange: (next: SearchFilters) => void
+  isFiltersOpen: boolean
+  onFiltersOpenChange: (open: boolean) => void
+  search: UseQueryResult<TmdbSearchMovieResponse, unknown>
+}) {
   return (
     <Container>
       <Header>
         <h1>TMDB Movie Search</h1>
         <p>Find your favorite movies with powerful search and autocomplete</p>
       </Header>
-
-      <SearchSection />
-      <ResultsSection search={search} />
+      <SearchSection
+        query={query}
+        onQueryChange={onQueryChange}
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        isFiltersOpen={isFiltersOpen}
+        onFiltersOpenChange={onFiltersOpenChange}
+      />
+      <ResultsSection search={search} query={query} searchedQuery={searchedQuery} />
     </Container>
   )
 }

@@ -1,8 +1,9 @@
 import { memo, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { TMDB_IMAGE_BASE_URL } from '../../../shared/config/tmdb'
+import { TMDB_IMAGE_BASE_URL } from '../../../shared/api/tmdb/config/tmdb'
 import type { TmdbMovie } from '../../../shared/api/tmdb/types'
+import { useGenres } from '../../../shared/hooks/useGenres'
 
 const Card = styled.article`
   background: white;
@@ -85,6 +86,22 @@ const Overview = styled.p`
   overflow: hidden;
 `
 
+const Genres = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+`
+
+const GenreTag = styled.span`
+  background: rgba(118, 75, 162, 0.1);
+  color: #764ba2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+`
+
 function getYear(releaseDate: string) {
   if (!releaseDate) return ''
   const y = releaseDate.slice(0, 4)
@@ -93,12 +110,19 @@ function getYear(releaseDate: string) {
 
 export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }) {
   const navigate = useNavigate()
+  const { data: genresById = {} } = useGenres()
 
   const year = useMemo(() => getYear(movie.release_date), [movie.release_date])
+
   const posterUrl = useMemo(() => {
     if (!movie.poster_path) return null
     return `${TMDB_IMAGE_BASE_URL}${movie.poster_path}`
   }, [movie.poster_path])
+
+  const genreNames = useMemo(() => {
+    if (!movie.genre_ids?.length) return []
+    return movie.genre_ids.map(id => genresById[id]).filter(Boolean)
+  }, [genresById, movie.genre_ids])
 
   return (
     <Card
@@ -118,6 +142,13 @@ export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }
         <Title>{movie.title}</Title>
         <Year>{year}</Year>
         <Overview>{movie.overview || 'No overview available.'}</Overview>
+        {genreNames.length > 0 ? (
+          <Genres aria-label="Genres">
+            {genreNames.slice(0, 3).map((g) => (
+              <GenreTag key={g}>{g}</GenreTag>
+            ))}
+          </Genres>
+        ) : null}
       </Info>
     </Card>
   )

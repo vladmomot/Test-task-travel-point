@@ -1,8 +1,7 @@
 import styled from 'styled-components'
-import type { MovieSearchState } from '../../../features/search/hooks/useMovieSearch'
-import { useSearchContext } from '../../../features/search/context/SearchContext'
+import type { UseQueryResult } from '@tanstack/react-query'
+import type { TmdbSearchMovieResponse } from '../../../shared/api/tmdb/types'
 import { MoviesGrid } from './MoviesGrid'
-import { LoadingState } from './ui/LoadingState'
 import { ProgressBar } from './ui/ProgressBar'
 import { SkeletonGrid } from './ui/SkeletonGrid'
 
@@ -73,64 +72,67 @@ const EmptyState = styled.div`
   }
 `
 
-export function ResultsSection({ search }: { search: MovieSearchState }) {
-  const { query } = useSearchContext()
-  const trimmed = query.trim()
+type ResultsSectionProps = {
+  search: UseQueryResult<TmdbSearchMovieResponse, unknown>
+  query: string
+  searchedQuery: string
+}
 
-  const isLoading = search.status === 'loading'
-  const isIdle = search.status === 'idle'
-  const isError = search.status === 'error'
-  const isSuccess = search.status === 'success'
+export function ResultsSection({ search, query, searchedQuery }: ResultsSectionProps) {
+  const trimmed = query.trim()
+  const hasQuery = trimmed.length > 0
+  const trimmedSearched = searchedQuery.trim()
+  const isWaitingDebounce = trimmed !== trimmedSearched
+  const showProgress = hasQuery && search.isFetching && !search.isPending
+  const showSkeleton = hasQuery && (isWaitingDebounce || search.isPending || search.isFetching)
+  const showCount = hasQuery && search.isSuccess && search.data
+
+  let content: React.ReactNode
+
+  if (!hasQuery) {
+    content = (
+      <EmptyState>
+        <h3>Start searching</h3>
+        <p>Type a movie title above to see results.</p>
+      </EmptyState>
+    )
+  } else if (showSkeleton) {
+    content = <SkeletonGrid count={6} />
+  } else if (search.isError) {
+    content = (
+      <>
+        <ErrorBox role="alert">
+          {search.error instanceof Error
+            ? search.error.message
+            : 'Failed to load results.'}
+        </ErrorBox>
+        <EmptyState>
+          <h3>Something went wrong</h3>
+          <p>Try changing the query or filters and search again.</p>
+        </EmptyState>
+      </>
+    )
+  } else if (search.isSuccess && search.data.results.length > 0) {
+    content = <MoviesGrid movies={search.data.results} />
+  } else {
+    content = (
+      <EmptyState>
+        <h3>No movies found</h3>
+        <p>Try searching with different keywords or check your spelling.</p>
+      </EmptyState>
+    )
+  }
 
   return (
     <Root>
-      {isLoading ? <ProgressBar /> : null}
-
+      {showProgress ? <ProgressBar /> : null}
       <ResultsHeader>
         <ResultsTitle>Search Results</ResultsTitle>
         <ResultsCount>
-          {isSuccess ? `${search.totalResults} movies found` : '—'}
+          {showCount ? `${search.data.total_results} movies found` : '—'}
         </ResultsCount>
       </ResultsHeader>
-
-      {isError ? (
-        <>
-          <ErrorBox role="alert">
-            {search.errorMessage || 'Failed to load results.'}
-          </ErrorBox>
-          <EmptyState>
-            <h3>Something went wrong</h3>
-            <p>Try changing the query or filters and search again.</p>
-          </EmptyState>
-        </>
-      ) : null}
-
-      {isIdle ? (
-        <EmptyState>
-          <h3>Start searching</h3>
-          <p>Type a movie title above to see results.</p>
-        </EmptyState>
-      ) : null}
-
-      {isLoading ? (
-        trimmed.length < 2 ? (
-          <LoadingState text="Searching for movies..." />
-        ) : (
-          <SkeletonGrid count={6} />
-        )
-      ) : null}
-
-      {isSuccess ? (
-        search.movies.length > 0 ? (
-          <MoviesGrid movies={search.movies} />
-        ) : (
-          <EmptyState>
-            <h3>No movies found</h3>
-            <p>Try searching with different keywords or check your spelling.</p>
-          </EmptyState>
-        )
-      ) : null}
+      {content}
     </Root>
   )
 }
-

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useSearchContext } from '../../../features/search/context/SearchContext'
+import type { SearchFilters } from '../../../features/search/types'
 
 const Root = styled.div`
   margin-top: 2rem;
@@ -91,23 +91,36 @@ const CheckboxField = styled.div`
   }
 `
 
-export function AdvancedFilters() {
-  const { filters, setFilters, isFiltersOpen, setIsFiltersOpen } =
-    useSearchContext()
+function updateFilters(
+  prev: SearchFilters,
+  patch: Partial<SearchFilters>,
+): SearchFilters {
+  return { ...prev, ...patch }
+}
 
+export function AdvancedFilters({
+  filters,
+  onFiltersChange,
+  open,
+  onOpenChange,
+}: {
+  filters: SearchFilters
+  onFiltersChange: (next: SearchFilters) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   return (
     <Root>
-      <Toggle type="button" onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-        {isFiltersOpen ? '🔼 Hide Advanced Options' : '🔽 Advanced Search Options'}
+      <Toggle type="button" onClick={() => onOpenChange(!open)}>
+        {open ? '🔼 Hide Advanced Options' : '🔽 Advanced Search Options'}
       </Toggle>
-
-      <Content $open={isFiltersOpen}>
+      <Content $open={open}>
         <Field>
           <Label>Language</Label>
           <Select
             value={filters.language}
             onChange={(e) =>
-              setFilters((prev) => ({ ...prev, language: e.target.value }))
+              onFiltersChange(updateFilters(filters, { language: e.target.value }))
             }
           >
             <option value="en-US">English (US)</option>
@@ -121,49 +134,48 @@ export function AdvancedFilters() {
             <option value="zh-CN">Chinese</option>
           </Select>
         </Field>
-
         <Field>
           <Label>Release Year</Label>
           <Input
             type="number"
             min={1900}
-            max={2030}
+            max={new Date().getFullYear()}
             placeholder="e.g. 2024"
             value={filters.primaryReleaseYear ?? ''}
             onChange={(e) =>
-              setFilters((prev) => ({
-                ...prev,
-                primaryReleaseYear: e.target.value
-                  ? Number(e.target.value)
-                  : undefined,
-              }))
+              onFiltersChange(
+                updateFilters(filters, {
+                  primaryReleaseYear: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                }),
+              )
             }
           />
         </Field>
-
         <Field>
           <Label>Year</Label>
           <Input
             type="number"
             min={1900}
-            max={2030}
+            max={new Date().getFullYear()}
             placeholder="e.g. 2024"
             value={filters.year ?? ''}
             onChange={(e) =>
-              setFilters((prev) => ({
-                ...prev,
-                year: e.target.value ? Number(e.target.value) : undefined,
-              }))
+              onFiltersChange(
+                updateFilters(filters, {
+                  year: e.target.value ? Number(e.target.value) : undefined,
+                }),
+              )
             }
           />
         </Field>
-
         <Field>
           <Label>Region</Label>
           <Select
             value={filters.region}
             onChange={(e) =>
-              setFilters((prev) => ({ ...prev, region: e.target.value }))
+              onFiltersChange(updateFilters(filters, { region: e.target.value }))
             }
           >
             <option value="">All Regions</option>
@@ -179,7 +191,6 @@ export function AdvancedFilters() {
             <option value="KR">South Korea</option>
           </Select>
         </Field>
-
         <Field>
           <Label>Page</Label>
           <Input
@@ -188,14 +199,14 @@ export function AdvancedFilters() {
             max={1000}
             value={filters.page}
             onChange={(e) =>
-              setFilters((prev) => ({
-                ...prev,
-                page: Math.max(1, Number(e.target.value || 1)),
-              }))
+              onFiltersChange(
+                updateFilters(filters, {
+                  page: Math.max(1, Number(e.target.value || 1)),
+                }),
+              )
             }
           />
         </Field>
-
         <Field>
           <Label>Content Filter</Label>
           <CheckboxField>
@@ -204,7 +215,9 @@ export function AdvancedFilters() {
               type="checkbox"
               checked={filters.includeAdult}
               onChange={(e) =>
-                setFilters((prev) => ({ ...prev, includeAdult: e.target.checked }))
+                onFiltersChange(
+                  updateFilters(filters, { includeAdult: e.target.checked }),
+                )
               }
             />
             <label htmlFor="includeAdult">Include Adult Content</label>

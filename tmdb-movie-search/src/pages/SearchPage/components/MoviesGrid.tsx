@@ -21,8 +21,8 @@ export const MoviesGrid = memo(function MoviesGrid({
 }) {
   return (
     <Grid>
-      {movies.map((m) => (
-        <MovieCard key={m.id} movie={m} />
+      {movies.map((movie) => (
+        <MovieCard key={movie.id} movie={movie} />
       ))}
     </Grid>
   )

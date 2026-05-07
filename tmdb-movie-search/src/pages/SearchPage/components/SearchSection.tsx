@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useSearchContext } from '../../../features/search/context/SearchContext'
+import type { SearchFilters } from '../../../features/search/types'
 import { AdvancedFilters } from './AdvancedFilters'
 import { AutocompleteDropdown } from './AutocompleteDropdown'
 
@@ -43,22 +43,38 @@ const SearchInput = styled.input`
   }
 `
 
-export function SearchSection() {
-  const { query, setQuery } = useSearchContext()
-
+export function SearchSection({
+  query,
+  onQueryChange,
+  filters,
+  onFiltersChange,
+  isFiltersOpen,
+  onFiltersOpenChange,
+}: {
+  query: string
+  onQueryChange: (value: string) => void
+  filters: SearchFilters
+  onFiltersChange: (next: SearchFilters) => void
+  isFiltersOpen: boolean
+  onFiltersOpenChange: (open: boolean) => void
+}) {
   return (
     <SearchSectionRoot>
       <SearchContainer>
         <SearchInput
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search for movies..."
           aria-label="Search movies"
         />
         <AutocompleteDropdown />
       </SearchContainer>
-
-      <AdvancedFilters />
+      <AdvancedFilters
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        open={isFiltersOpen}
+        onOpenChange={onFiltersOpenChange}
+      />
     </SearchSectionRoot>
   )
 }
