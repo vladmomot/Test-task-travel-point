@@ -72,16 +72,48 @@ const EmptyState = styled.div`
   }
 `
 
+const Pagination = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+`
+
+const PageButton = styled.button`
+  border: 1px solid #d9c9ef;
+  background: white;
+  color: #5b3f87;
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`
+
+const PageInfo = styled.span`
+  color: #5b3f87;
+  font-weight: 600;
+`
+
 type ResultsSectionProps = {
   search: UseQueryResult<TmdbSearchMovieResponse, unknown>
   query: string
   searchedQuery: string
+  currentPage: number
+  onPageChange: (page: number) => void
 }
 
 export function ResultsSection({
   search,
   query,
   searchedQuery,
+  currentPage,
+  onPageChange,
 }: ResultsSectionProps) {
   const trimmed = query.trim()
   const hasQuery = trimmed.length > 0
@@ -91,6 +123,14 @@ export function ResultsSection({
     hasQuery && search.isFetching && !search.isPending && !isWaitingDebounce
   const showSkeleton = hasQuery && (isWaitingDebounce || search.isPending)
   const showCount = hasQuery && search.isSuccess && search.data
+  const totalPages = search.data?.total_pages ?? 1
+  const hasInvalidPage = hasQuery && search.isSuccess && currentPage > totalPages
+  const showPagination =
+    hasQuery &&
+    search.isSuccess &&
+    !!search.data &&
+    search.data.results.length > 0 &&
+    totalPages > 1
 
   let content: React.ReactNode
 
@@ -119,6 +159,22 @@ export function ResultsSection({
     )
   } else if (search.isSuccess && search.data.results.length > 0) {
     content = <MoviesGrid movies={search.data.results} />
+  } else if (hasInvalidPage) {
+    content = (
+      <>
+        <ErrorBox role="alert">
+          Page {currentPage} is out of range. Enter a page number less than or
+          equal to {totalPages}.
+        </ErrorBox>
+        <EmptyState>
+          <h3>Invalid page number</h3>
+          <p>
+            Available pages: 1 to {totalPages}. Please set a smaller page in the
+            Page filter or use Prev.
+          </p>
+        </EmptyState>
+      </>
+    )
   } else {
     content = (
       <EmptyState>
@@ -138,6 +194,27 @@ export function ResultsSection({
         </ResultsCount>
       </ResultsHeader>
       {content}
+      {showPagination ? (
+        <Pagination>
+          <PageButton
+            type="button"
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage <= 1 || search.isFetching}
+          >
+            Prev
+          </PageButton>
+          <PageInfo>
+            Page {currentPage} of {totalPages}
+          </PageInfo>
+          <PageButton
+            type="button"
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage >= totalPages || search.isFetching}
+          >
+            Next
+          </PageButton>
+        </Pagination>
+      ) : null}
     </Root>
   )
 }

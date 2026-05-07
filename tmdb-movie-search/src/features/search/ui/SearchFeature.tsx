@@ -15,17 +15,28 @@ export function SearchFeature() {
   const result = useMovieSearch(debouncedQuery, filters)
   const suggestions = useMovieSuggestions(debouncedAutocomplete, filters)
 
+  const handleQueryChange = (value: string) => {
+    setQuery(value)
+    setFilters((prev) => ({ ...prev, page: 1 }))
+  }
+
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }))
+  }
+
   return (
     <SearchLayout
       query={query}
       searchedQuery={debouncedQuery}
-      onQueryChange={setQuery}
+      onQueryChange={handleQueryChange}
       filters={filters}
       onFiltersChange={setFilters}
       isFiltersOpen={isFiltersOpen}
       onFiltersOpenChange={setIsFiltersOpen}
       search={result}
       suggestions={suggestions}
+      currentPage={filters.page}
+      onPageChange={handlePageChange}
     />
   )
 }

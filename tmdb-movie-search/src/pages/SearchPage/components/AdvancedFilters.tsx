@@ -4,7 +4,7 @@ import {
   LANGUAGE_OPTIONS,
   REGION_OPTIONS,
 } from '../../../features/search/constants'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Root = styled.div`
   margin-top: 2rem;
@@ -143,6 +143,10 @@ export function AdvancedFilters({
   const isReleaseYearInvalid =
     draftReleaseYear.length >= 4 &&
     parseValidYear(draftReleaseYear) === undefined
+
+  useEffect(() => {
+    setDraftPage(filters.page.toString())
+  }, [filters.page])
 
   return (
     <Root>

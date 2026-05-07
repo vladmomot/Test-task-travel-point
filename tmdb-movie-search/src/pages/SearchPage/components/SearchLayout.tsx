@@ -47,6 +47,8 @@ export function SearchLayout({
   search,
   searchedQuery,
   suggestions,
+  currentPage,
+  onPageChange,
 }: {
   query: string
   searchedQuery: string
@@ -57,6 +59,8 @@ export function SearchLayout({
   onFiltersOpenChange: (open: boolean) => void
   search: UseQueryResult<TmdbSearchMovieResponse, unknown>
   suggestions: UseQueryResult<TmdbSearchMovieResponse, unknown>
+  currentPage: number
+  onPageChange: (page: number) => void
 }) {
   return (
     <Container>
@@ -77,6 +81,8 @@ export function SearchLayout({
         search={search}
         query={query}
         searchedQuery={searchedQuery}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
       />
     </Container>
   )
