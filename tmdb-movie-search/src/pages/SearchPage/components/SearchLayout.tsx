@@ -45,7 +45,8 @@ export function SearchLayout({
   isFiltersOpen,
   onFiltersOpenChange,
   search,
-  searchedQuery
+  searchedQuery,
+  suggestions,
 }: {
   query: string
   searchedQuery: string
@@ -55,6 +56,7 @@ export function SearchLayout({
   isFiltersOpen: boolean
   onFiltersOpenChange: (open: boolean) => void
   search: UseQueryResult<TmdbSearchMovieResponse, unknown>
+  suggestions: UseQueryResult<TmdbSearchMovieResponse, unknown>
 }) {
   return (
     <Container>
@@ -69,9 +71,13 @@ export function SearchLayout({
         onFiltersChange={onFiltersChange}
         isFiltersOpen={isFiltersOpen}
         onFiltersOpenChange={onFiltersOpenChange}
+        suggestions={suggestions}
       />
-      <ResultsSection search={search} query={query} searchedQuery={searchedQuery} />
+      <ResultsSection
+        search={search}
+        query={query}
+        searchedQuery={searchedQuery}
+      />
     </Container>
   )
 }
-

@@ -20,11 +20,8 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <ErrorBoundary>
       <GlobalStyle />
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
   )
 }
-

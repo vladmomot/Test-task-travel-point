@@ -1,5 +1,10 @@
 import styled from 'styled-components'
 import type { SearchFilters } from '../../../features/search/types'
+import {
+  LANGUAGE_OPTIONS,
+  REGION_OPTIONS,
+} from '../../../features/search/constants'
+import { useState } from 'react'
 
 const Root = styled.div`
   margin-top: 2rem;
@@ -44,17 +49,23 @@ const Label = styled.label`
   font-size: 0.9rem;
 `
 
-const Input = styled.input`
+const Input = styled.input<{ $invalid?: boolean }>`
   padding: 0.75rem;
-  border: 2px solid #e1e5e9;
+  border: 2px solid ${(p) => (p.$invalid ? '#dc2626' : '#e1e5e9')};
   border-radius: 10px;
   font-size: 0.95rem;
   background: white;
-  transition: border-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #764ba2;
+    border-color: ${(p) => (p.$invalid ? '#dc2626' : '#764ba2')};
+
+    box-shadow: 0 0 0 3px
+      ${(p) =>
+        p.$invalid ? 'rgba(220, 38, 38, 0.15)' : 'rgba(118, 75, 162, 0.15)'};
   }
 `
 
@@ -109,6 +120,30 @@ export function AdvancedFilters({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const [draftYear, setDraftYear] = useState(filters.year?.toString() ?? '')
+  const [draftReleaseYear, setDraftReleaseYear] = useState(
+    filters.primaryReleaseYear?.toString() ?? '',
+  )
+  const [draftPage, setDraftPage] = useState(filters.page.toString())
+
+  const MIN_YEAR = 1900
+  const MAX_YEAR = new Date().getFullYear()
+
+  function parseValidYear(value: string) {
+    if (!value) return undefined
+    const year = Number(value)
+    if (!Number.isInteger(year)) return undefined
+    if (year < MIN_YEAR || year > MAX_YEAR) return undefined
+    return year
+  }
+
+  const isYearInvalid =
+    draftYear.length >= 4 && parseValidYear(draftYear) === undefined
+
+  const isReleaseYearInvalid =
+    draftReleaseYear.length >= 4 &&
+    parseValidYear(draftReleaseYear) === undefined
+
   return (
     <Root>
       <Toggle type="button" onClick={() => onOpenChange(!open)}>
@@ -120,54 +155,62 @@ export function AdvancedFilters({
           <Select
             value={filters.language}
             onChange={(e) =>
-              onFiltersChange(updateFilters(filters, { language: e.target.value }))
+              onFiltersChange(
+                updateFilters(filters, { language: e.target.value }),
+              )
             }
           >
-            <option value="en-US">English (US)</option>
-            <option value="en-GB">English (UK)</option>
-            <option value="es-ES">Spanish</option>
-            <option value="fr-FR">French</option>
-            <option value="de-DE">German</option>
-            <option value="it-IT">Italian</option>
-            <option value="ja-JP">Japanese</option>
-            <option value="ko-KR">Korean</option>
-            <option value="zh-CN">Chinese</option>
+            {LANGUAGE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </Select>
         </Field>
         <Field>
           <Label>Release Year</Label>
           <Input
-            type="number"
-            min={1900}
-            max={new Date().getFullYear()}
+            $invalid={isReleaseYearInvalid}
+            type="text"
+            inputMode="numeric"
+            min={MIN_YEAR}
+            max={MAX_YEAR}
+            maxLength={4}
             placeholder="e.g. 2024"
-            value={filters.primaryReleaseYear ?? ''}
-            onChange={(e) =>
+            value={draftReleaseYear}
+            onChange={(e) => {
+              const value = e.target.value
+              if (!/^\d*$/.test(value)) return
+              setDraftReleaseYear(value)
               onFiltersChange(
                 updateFilters(filters, {
-                  primaryReleaseYear: e.target.value
-                    ? Number(e.target.value)
-                    : undefined,
+                  primaryReleaseYear: parseValidYear(value),
                 }),
               )
-            }
+            }}
           />
         </Field>
         <Field>
           <Label>Year</Label>
           <Input
-            type="number"
-            min={1900}
-            max={new Date().getFullYear()}
+            $invalid={isYearInvalid}
+            type="text"
+            inputMode="numeric"
+            min={MIN_YEAR}
+            max={MAX_YEAR}
+            maxLength={4}
             placeholder="e.g. 2024"
-            value={filters.year ?? ''}
-            onChange={(e) =>
+            value={draftYear}
+            onChange={(e) => {
+              const value = e.target.value
+              if (!/^\d*$/.test(value)) return
+              setDraftYear(value)
               onFiltersChange(
                 updateFilters(filters, {
-                  year: e.target.value ? Number(e.target.value) : undefined,
+                  year: parseValidYear(value),
                 }),
               )
-            }
+            }}
           />
         </Field>
         <Field>
@@ -175,36 +218,44 @@ export function AdvancedFilters({
           <Select
             value={filters.region}
             onChange={(e) =>
-              onFiltersChange(updateFilters(filters, { region: e.target.value }))
+              onFiltersChange(
+                updateFilters(filters, { region: e.target.value }),
+              )
             }
           >
-            <option value="">All Regions</option>
-            <option value="US">United States</option>
-            <option value="GB">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="FR">France</option>
-            <option value="ES">Spain</option>
-            <option value="IT">Italy</option>
-            <option value="JP">Japan</option>
-            <option value="KR">South Korea</option>
+            {REGION_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </Select>
         </Field>
         <Field>
           <Label>Page</Label>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             min={1}
-            max={1000}
-            value={filters.page}
-            onChange={(e) =>
+            value={draftPage}
+            onChange={(e) => {
+              const value = e.target.value
+              if (!/^\d*$/.test(value)) return
+              setDraftPage(value)
+              const page = Number(value)
+              if (!value) return
+              if (!Number.isInteger(page)) return
+              if (page < 1) return
               onFiltersChange(
                 updateFilters(filters, {
-                  page: Math.max(1, Number(e.target.value || 1)),
+                  page,
                 }),
               )
-            }
+            }}
+            onBlur={() => {
+              if (!draftPage) {
+                setDraftPage(filters.page.toString())
+              }
+            }}
           />
         </Field>
         <Field>
@@ -227,4 +278,3 @@ export function AdvancedFilters({
     </Root>
   )
 }
-

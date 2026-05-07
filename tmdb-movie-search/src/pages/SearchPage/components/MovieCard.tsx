@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { TMDB_IMAGE_BASE_URL } from '../../../shared/api/tmdb/config/tmdb'
 import type { TmdbMovie } from '../../../shared/api/tmdb/types'
 import { useGenres } from '../../../shared/hooks/useGenres'
+import { yearFromReleaseDate } from '../../../shared/utils'
 
 const Card = styled.article`
   background: white;
@@ -102,17 +103,18 @@ const GenreTag = styled.span`
   font-weight: 500;
 `
 
-function getYear(releaseDate: string) {
-  if (!releaseDate) return ''
-  const y = releaseDate.slice(0, 4)
-  return /^\d{4}$/.test(y) ? y : ''
-}
-
-export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }) {
+export const MovieCard = memo(function MovieCard({
+  movie,
+}: {
+  movie: TmdbMovie
+}) {
   const navigate = useNavigate()
   const { data: genresById = {} } = useGenres()
 
-  const year = useMemo(() => getYear(movie.release_date), [movie.release_date])
+  const year = useMemo(
+    () => yearFromReleaseDate(movie.release_date),
+    [movie.release_date],
+  )
 
   const posterUrl = useMemo(() => {
     if (!movie.poster_path) return null
@@ -121,7 +123,7 @@ export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }
 
   const genreNames = useMemo(() => {
     if (!movie.genre_ids?.length) return []
-    return movie.genre_ids.map(id => genresById[id]).filter(Boolean)
+    return movie.genre_ids.map((id) => genresById[id]).filter(Boolean)
   }, [genresById, movie.genre_ids])
 
   return (
@@ -136,7 +138,9 @@ export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }
     >
       <Poster>
         <Rating>{movie.vote_average.toFixed(1)}</Rating>
-        {posterUrl ? <img src={posterUrl} alt={movie.title} loading="lazy" /> : null}
+        {posterUrl ? (
+          <img src={posterUrl} alt={movie.title} loading="lazy" />
+        ) : null}
       </Poster>
       <Info>
         <Title>{movie.title}</Title>
@@ -153,4 +157,3 @@ export const MovieCard = memo(function MovieCard({ movie }: { movie: TmdbMovie }
     </Card>
   )
 })
-

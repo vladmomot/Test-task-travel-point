@@ -27,4 +27,3 @@ export const MoviesGrid = memo(function MoviesGrid({
     </Grid>
   )
 })
-

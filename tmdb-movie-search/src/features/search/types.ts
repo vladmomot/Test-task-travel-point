@@ -13,4 +13,3 @@ export const DEFAULT_SEARCH_FILTERS: SearchFilters = {
   includeAdult: false,
   region: '',
 }
-

@@ -29,4 +29,3 @@ export function LoadingState({ text }: { text: string }) {
     </Root>
   )
 }
-
