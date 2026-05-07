@@ -10,6 +10,7 @@ The app allows users to search for movies, browse suggestions in real time, appl
 * 🔍 Movie search by title
 * ⚡ Real-time autocomplete suggestions
 * 🎬 Movie cards with posters, ratings, genres, and release year
+* 🎬 Movie details page
 * 🎛 Advanced filters:
   * Language
   * Region
@@ -198,8 +199,6 @@ The project includes tests for:
 
 ## Future Improvements
 
-* Full movie details page
-* Infinite scrolling
 * Favorites/watchlist
 * Dark mode
 * Better accessibility support
