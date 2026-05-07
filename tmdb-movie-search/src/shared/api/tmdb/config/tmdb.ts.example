@@ -1,6 +1,0 @@
-export const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
-export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
-// Create a tmdb.ts file with your API_KEY and JWT_TOKEN
-export const TMDB_API_KEY = 'YOUR_API_KEY_HERE'
-export const TMDB_JWT_TOKEN = 'YOUR_JWT_TOKEN_HERE'
-
