@@ -33,4 +33,24 @@ export type TmdbGenre = {
 export type TmdbGenreListResponse = {
   genres: TmdbGenre[]
 }
-
+export type TmdbMovieDetails = {
+  id: number
+  title: string
+  original_title: string
+  overview: string
+  release_date: string
+  poster_path: string | null
+  backdrop_path: string | null
+  vote_average: number
+  vote_count: number
+  runtime: number | null
+  tagline: string
+  genres: {
+    id: number
+    name: string
+  }[]
+  production_countries: {
+    iso_3166_1: string
+    name: string
+  }[]
+}
