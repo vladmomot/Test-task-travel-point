@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import type { UseQueryResult } from '@tanstack/react-query'
 import type { TmdbSearchMovieResponse } from '../../../shared/api/tmdb/types'
@@ -115,6 +116,8 @@ export function ResultsSection({
   currentPage,
   onPageChange,
 }: ResultsSectionProps) {
+  const rootRef = useRef<HTMLElement | null>(null)
+  const previousPageRef = useRef(currentPage)
   const trimmed = query.trim()
   const hasQuery = trimmed.length > 0
   const trimmedSearched = searchedQuery.trim()
@@ -124,13 +127,21 @@ export function ResultsSection({
   const showSkeleton = hasQuery && (isWaitingDebounce || search.isPending)
   const showCount = hasQuery && search.isSuccess && search.data
   const totalPages = search.data?.total_pages ?? 1
-  const hasInvalidPage = hasQuery && search.isSuccess && currentPage > totalPages
+  const hasInvalidPage =
+    hasQuery && search.isSuccess && currentPage > totalPages
   const showPagination =
     hasQuery &&
     search.isSuccess &&
     !!search.data &&
     search.data.results.length > 0 &&
     totalPages > 1
+
+  useEffect(() => {
+    if (previousPageRef.current === currentPage) return
+
+    previousPageRef.current = currentPage
+    rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [currentPage])
 
   let content: React.ReactNode
 
@@ -185,7 +196,7 @@ export function ResultsSection({
   }
 
   return (
-    <Root>
+    <Root ref={rootRef}>
       {showProgress ? <ProgressBar /> : null}
       <ResultsHeader>
         <ResultsTitle>Search Results</ResultsTitle>
