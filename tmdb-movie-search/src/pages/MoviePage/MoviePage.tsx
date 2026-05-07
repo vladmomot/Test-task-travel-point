@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { TMDB_IMAGE_BASE_URL } from '../../shared/api/tmdb/config/tmdb'
 import { useMovieDetails } from '../../features/movie/hooks/useMovieDetails'
@@ -110,9 +110,24 @@ const State = styled.div`
   color: white;
 `
 
+type MovieLocationState = {
+  fromSearch?: string
+}
+
+function getBackToSearchPath(state: unknown) {
+  if (!state || typeof state !== 'object') return '/'
+
+  const fromSearch = (state as MovieLocationState).fromSearch
+  if (!fromSearch?.startsWith('/') || fromSearch.startsWith('//')) return '/'
+
+  return fromSearch
+}
+
 export default function MoviePage() {
   const { movieId } = useParams()
+  const location = useLocation()
   const movie = useMovieDetails(movieId)
+  const backToSearch = getBackToSearchPath(location.state)
 
   if (movie.isPending) {
     return (
@@ -132,7 +147,7 @@ export default function MoviePage() {
               ? movie.error.message
               : 'Something went wrong'}
           </p>
-          <BackLink to="/">← Back to search</BackLink>
+          <BackLink to={backToSearch}>← Back to search</BackLink>
         </State>
       </Root>
     )
@@ -150,7 +165,7 @@ export default function MoviePage() {
 
   return (
     <Root>
-      <BackLink to="/">← Back to search</BackLink>
+      <BackLink to={backToSearch}>← Back to search</BackLink>
       <Card>
         <Poster>
           {posterUrl ? <img src={posterUrl} alt={movie.data.title} /> : null}

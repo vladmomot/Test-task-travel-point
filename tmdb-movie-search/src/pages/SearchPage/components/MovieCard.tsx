@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { TMDB_IMAGE_BASE_URL } from '../../../shared/api/tmdb/config/tmdb'
 import type { TmdbMovie } from '../../../shared/api/tmdb/types'
@@ -109,6 +109,7 @@ export const MovieCard = memo(function MovieCard({
   movie: TmdbMovie
 }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { data: genresById = {} } = useGenres()
 
   const year = useMemo(
@@ -126,14 +127,19 @@ export const MovieCard = memo(function MovieCard({
     return movie.genre_ids.map((id) => genresById[id]).filter(Boolean)
   }, [genresById, movie.genre_ids])
 
+  const openMovie = () => {
+    navigate(`/movie/${movie.id}`, {
+      state: {
+        fromSearch: `${location.pathname}${location.search}${location.hash}`,
+      },
+    })
+  }
+
   return (
     <Card
       role="button"
       tabIndex={0}
-      onClick={() => navigate(`/movie/${movie.id}`)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') navigate(`/movie/${movie.id}`)
-      }}
+      onClick={openMovie}
       aria-label={`Open movie ${movie.title}`}
     >
       <Poster>

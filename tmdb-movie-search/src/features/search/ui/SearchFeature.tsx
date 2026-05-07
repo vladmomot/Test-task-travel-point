@@ -1,14 +1,24 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useMovieSearch } from '../hooks/useMovieSearch'
 import { useMovieSuggestions } from '../hooks/useMovieSuggestions'
-import { DEFAULT_SEARCH_FILTERS, type SearchFilters } from '../types'
+import type { SearchFilters } from '../types'
 import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue'
 import { SearchLayout } from '../../../pages/SearchPage/components/SearchLayout'
 import { useSearchHistory } from '../hooks/useSearchHistory'
+import {
+  parseSearchUrlState,
+  serializeSearchUrlState,
+} from '../lib/searchUrlState'
 
 export function SearchFeature() {
-  const [query, setQuery] = useState('')
-  const [filters, setFilters] = useState<SearchFilters>(DEFAULT_SEARCH_FILTERS)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(
+    () => parseSearchUrlState(searchParams).query,
+  )
+  const [filters, setFilters] = useState<SearchFilters>(
+    () => parseSearchUrlState(searchParams).filters,
+  )
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
   const debouncedQuery = useDebouncedValue(query, 700)
@@ -25,6 +35,13 @@ export function SearchFeature() {
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }))
   }
+
+  useEffect(() => {
+    const nextParams = serializeSearchUrlState(query, filters)
+    if (nextParams.toString() === searchParams.toString()) return
+
+    setSearchParams(nextParams, { replace: true })
+  }, [filters, query, searchParams, setSearchParams])
 
   useEffect(() => {
     if (!result.isSuccess) return
