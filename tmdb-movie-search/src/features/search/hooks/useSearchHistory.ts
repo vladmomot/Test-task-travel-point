@@ -5,7 +5,6 @@ const MAX_HISTORY = 10
 
 export function useSearchHistory() {
   const [history, setHistory] = useState<string[]>([])
-
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
@@ -21,15 +20,9 @@ export function useSearchHistory() {
     } catch {}
   }, [])
 
-  const persist = useCallback((next: string[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    setHistory(next)
-  }, [])
-
   const addQuery = useCallback((query: string) => {
     const trimmed = query.trim()
     if (!trimmed) return
-
     setHistory((prev) => {
       const next = [trimmed, ...prev.filter((h) => h !== trimmed)].slice(
         0,
@@ -41,8 +34,13 @@ export function useSearchHistory() {
   }, [])
 
   const clearHistory = useCallback(() => {
-    persist([])
-  }, [persist])
+    localStorage.removeItem(STORAGE_KEY)
+    setHistory([])
+  }, [])
 
-  return { history, addQuery, clearHistory }
+  return {
+    history,
+    addQuery,
+    clearHistory,
+  }
 }

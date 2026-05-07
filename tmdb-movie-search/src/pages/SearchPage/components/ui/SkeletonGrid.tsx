@@ -47,7 +47,7 @@ const Line = styled.div<{ $w: string; $h: string }>`
 
 export function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
-    <Grid aria-label="Loading placeholder">
+    <Grid aria-label="Loading movies" aria-busy="true">
       {Array.from({ length: count }).map((_, idx) => (
         <Card key={idx}>
           <Poster />

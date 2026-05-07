@@ -155,8 +155,9 @@ export function AdvancedFilters({
       </Toggle>
       <Content $open={open}>
         <Field>
-          <Label>Language</Label>
+          <Label htmlFor="language">Language</Label>
           <Select
+            id="language"
             value={filters.language}
             onChange={(e) =>
               onFiltersChange(
@@ -172,8 +173,9 @@ export function AdvancedFilters({
           </Select>
         </Field>
         <Field>
-          <Label>Release Year</Label>
+          <Label htmlFor="releaseYear">Release Year</Label>
           <Input
+            id="releaseYear"
             $invalid={isReleaseYearInvalid}
             type="text"
             inputMode="numeric"
@@ -195,8 +197,9 @@ export function AdvancedFilters({
           />
         </Field>
         <Field>
-          <Label>Year</Label>
+          <Label htmlFor="year">Year</Label>
           <Input
+            id="year"
             $invalid={isYearInvalid}
             type="text"
             inputMode="numeric"
@@ -218,8 +221,9 @@ export function AdvancedFilters({
           />
         </Field>
         <Field>
-          <Label>Region</Label>
+          <Label htmlFor="region">Region</Label>
           <Select
+            id="region"
             value={filters.region}
             onChange={(e) =>
               onFiltersChange(
@@ -235,8 +239,9 @@ export function AdvancedFilters({
           </Select>
         </Field>
         <Field>
-          <Label>Page</Label>
+          <Label htmlFor="page">Page</Label>
           <Input
+            id="page"
             type="text"
             inputMode="numeric"
             min={1}
