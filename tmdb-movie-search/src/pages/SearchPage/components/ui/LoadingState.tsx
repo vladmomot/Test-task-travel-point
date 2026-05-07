@@ -5,26 +5,32 @@ const spin = keyframes`
   100% { transform: rotate(360deg); }
 `
 
-const Root = styled.div`
+const Root = styled.div<{ $compact: boolean }>`
   text-align: center;
-  padding: 3rem;
+  padding: ${(p) => (p.$compact ? '1rem 1.25rem' : '3rem')};
   color: #666;
 `
 
-const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f0f0f0;
-  border-top: 4px solid #764ba2;
+const Spinner = styled.div<{ $compact: boolean }>`
+  width: ${(p) => (p.$compact ? '18px' : '40px')};
+  height: ${(p) => (p.$compact ? '18px' : '40px')};
+  border: ${(p) => (p.$compact ? '2px' : '4px')} solid #f0f0f0;
+  border-top: ${(p) => (p.$compact ? '2px' : '4px')} solid #764ba2;
   border-radius: 50%;
   animation: ${spin} 1s linear infinite;
-  margin: 0 auto 1rem;
+  margin: ${(p) => (p.$compact ? '0 auto 0.4rem' : '0 auto 1rem')};
 `
 
-export function LoadingState({ text }: { text: string }) {
+export function LoadingState({
+  text,
+  compact = false,
+}: {
+  text: string
+  compact?: boolean
+}) {
   return (
-    <Root>
-      <Spinner />
+    <Root $compact={compact}>
+      <Spinner $compact={compact} />
       <p>{text}</p>
     </Root>
   )

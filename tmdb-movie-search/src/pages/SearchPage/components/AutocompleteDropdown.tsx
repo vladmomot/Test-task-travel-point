@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { TMDB_IMAGE_BASE_URL } from '../../../shared/api/tmdb/config/tmdb'
 import { useGenres } from '../../../shared/hooks/useGenres'
 import { yearFromReleaseDate } from '../../../shared/utils'
+import { LoadingState } from './ui/LoadingState'
 
 const Dropdown = styled.div<{ $open: boolean }>`
   position: absolute;
@@ -154,7 +155,7 @@ export function AutocompleteDropdown({
   return (
     <Dropdown $open={open} role="listbox" aria-label="Suggestions">
       {isLoading && autocompleteMovies.length === 0 ? (
-        <StateRow>Loading suggestions...</StateRow>
+        <LoadingState text="Loading suggestions..." compact />
       ) : isEmpty ? (
         <StateRow>No movies found</StateRow>
       ) : null}

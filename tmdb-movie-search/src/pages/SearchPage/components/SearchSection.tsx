@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import type { SearchFilters } from '../../../features/search/types'
 import type { UseQueryResult } from '@tanstack/react-query'
 import type { TmdbSearchMovieResponse } from '../../../shared/api/tmdb/types'
@@ -30,14 +30,9 @@ const SearchContainer = styled.div`
   z-index: 2000;
 `
 
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`
-
 const SearchInput = styled.input`
   width: 100%;
-  padding: 1rem 3rem 1rem 1.5rem;
+  padding: 1rem 1.5rem;
   font-size: 1.1rem;
   border: 2px solid #e1e5e9;
   border-radius: 15px;
@@ -50,20 +45,6 @@ const SearchInput = styled.input`
   &:focus {
     border-color: #764ba2;
   }
-`
-
-const InputLoader = styled.div`
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  border: 2px solid #e8e8e8;
-  border-top-color: #764ba2;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  animation: ${spin} 0.8s linear infinite;
-  z-index: 10002;
 `
 
 const SUGGETIONS_MAX_COUNT = 5
@@ -148,34 +129,27 @@ export function SearchSection({
               }
               return
             }
-
             if (e.key === 'Escape') {
               setOpen(false)
               setActiveIndex(-1)
               return
             }
-
             if (e.key === 'ArrowDown') {
               e.preventDefault()
               setActiveIndex((prev) => Math.min(items.length - 1, prev + 1))
               return
             }
-
             if (e.key === 'ArrowUp') {
               e.preventDefault()
               setActiveIndex((prev) => Math.max(0, prev - 1))
               return
             }
-
             if (e.key === 'Enter' && activeIndex >= 0) {
               e.preventDefault()
               selectItem(activeIndex)
             }
           }}
         />
-        {(suggestions.isPending || suggestions.isFetching) && hasMinChars ? (
-          <InputLoader aria-label="Loading suggestions" />
-        ) : null}
         <AutocompleteDropdown
           open={open && canShow}
           items={items}

@@ -87,9 +87,9 @@ export function ResultsSection({
   const hasQuery = trimmed.length > 0
   const trimmedSearched = searchedQuery.trim()
   const isWaitingDebounce = trimmed !== trimmedSearched
-  const showProgress = hasQuery && search.isFetching && !search.isPending
-  const showSkeleton =
-    hasQuery && (isWaitingDebounce || search.isPending || search.isFetching)
+  const showProgress =
+    hasQuery && search.isFetching && !search.isPending && !isWaitingDebounce
+  const showSkeleton = hasQuery && (isWaitingDebounce || search.isPending)
   const showCount = hasQuery && search.isSuccess && search.data
 
   let content: React.ReactNode
