@@ -17,6 +17,29 @@ const baseFilters: SearchFilters = {
 }
 
 describe('SearchSection', () => {
+  it('clears the current query from the clear button', () => {
+    const onQueryChange = vi.fn()
+
+    render(
+      <SearchSection
+        query="matrix"
+        onQueryChange={onQueryChange}
+        filters={baseFilters}
+        onFiltersChange={() => {}}
+        isFiltersOpen={false}
+        onFiltersOpenChange={() => {}}
+        suggestions={makeQueryResult<TmdbSearchMovieResponse>()}
+        history={[]}
+        onHistorySelect={() => {}}
+        onClearHistory={() => {}}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear search' }))
+
+    expect(onQueryChange).toHaveBeenCalledWith('')
+  })
+
   it('renders history and handles history actions', () => {
     const onHistorySelect = vi.fn()
     const onClearHistory = vi.fn()

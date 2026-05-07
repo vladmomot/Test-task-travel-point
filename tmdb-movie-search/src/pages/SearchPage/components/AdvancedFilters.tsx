@@ -1,5 +1,8 @@
 import styled from 'styled-components'
-import type { SearchFilters } from '../../../features/search/types'
+import {
+  DEFAULT_SEARCH_FILTERS,
+  type SearchFilters,
+} from '../../../features/search/types'
 import {
   LANGUAGE_OPTIONS,
   REGION_OPTIONS,
@@ -12,6 +15,19 @@ const Root = styled.div`
   border-top: 1px solid #e1e5e9;
 `
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+`
+
 const Toggle = styled.button`
   background: none;
   border: none;
@@ -22,11 +38,34 @@ const Toggle = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
   transition: color 0.3s ease;
 
   &:hover {
     color: #5a3a7a;
+  }
+`
+
+const ResetButton = styled.button`
+  border: 1px solid #d9c9ef;
+  background: white;
+  color: #5b3f87;
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(118, 75, 162, 0.08);
+    border-color: #b89bdc;
+    color: #43276e;
+    outline: none;
   }
 `
 
@@ -146,11 +185,24 @@ export function AdvancedFilters({
     draftReleaseYear.length >= 4 &&
     parseValidYear(draftReleaseYear) === undefined
 
+  const resetFilters = () => {
+    setDraftYear('')
+    setDraftReleaseYear('')
+    setDraftPage(DEFAULT_SEARCH_FILTERS.page.toString())
+    setIsPageEditing(false)
+    onFiltersChange({ ...DEFAULT_SEARCH_FILTERS })
+  }
+
   return (
     <Root>
-      <Toggle type="button" onClick={() => onOpenChange(!open)}>
-        {open ? '🔼 Hide Advanced Options' : '🔽 Advanced Search Options'}
-      </Toggle>
+      <Header>
+        <Toggle type="button" onClick={() => onOpenChange(!open)}>
+          {open ? '🔼 Hide Advanced Options' : '🔽 Advanced Search Options'}
+        </Toggle>
+        <ResetButton type="button" onClick={resetFilters}>
+          Reset filters
+        </ResetButton>
+      </Header>
       <Content $open={open}>
         <Field>
           <Label htmlFor="language">Language</Label>

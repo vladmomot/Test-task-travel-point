@@ -32,7 +32,7 @@ const SearchContainer = styled.div`
 
 const SearchInput = styled.input`
   width: 100%;
-  padding: 1rem 1.5rem;
+  padding: 1rem 3.3rem 1rem 1.5rem;
   font-size: 1.1rem;
   border: 2px solid #e1e5e9;
   border-radius: 15px;
@@ -44,6 +44,35 @@ const SearchInput = styled.input`
 
   &:focus {
     border-color: #764ba2;
+  }
+`
+
+const ClearSearchButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 0.65rem;
+  z-index: 10002;
+  width: 2.25rem;
+  height: 2.25rem;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 999px;
+  background: rgba(118, 75, 162, 0.1);
+  color: #5b3f87;
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(118, 75, 162, 0.18);
+    color: #43276e;
+    outline: none;
   }
 `
 
@@ -129,6 +158,7 @@ export function SearchSection({
   onClearHistory: () => void
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number>(-1)
 
@@ -165,10 +195,18 @@ export function SearchSection({
     setActiveIndex(-1)
   }
 
+  const clearSearch = () => {
+    onQueryChange('')
+    setOpen(false)
+    setActiveIndex(-1)
+    inputRef.current?.focus()
+  }
+
   return (
     <SearchSectionRoot>
       <SearchContainer ref={containerRef}>
         <SearchInput
+          ref={inputRef}
           value={query}
           onChange={(e) => {
             const nextQuery = e.target.value
@@ -212,6 +250,15 @@ export function SearchSection({
             }
           }}
         />
+        {query ? (
+          <ClearSearchButton
+            type="button"
+            aria-label="Clear search"
+            onClick={clearSearch}
+          >
+            &times;
+          </ClearSearchButton>
+        ) : null}
         <AutocompleteDropdown
           open={open && canShow}
           items={items}
