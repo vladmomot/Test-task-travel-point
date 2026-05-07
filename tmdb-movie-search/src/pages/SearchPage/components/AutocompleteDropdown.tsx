@@ -123,7 +123,7 @@ export function AutocompleteDropdown({
 }) {
   const { data: genresById = {} } = useGenres()
 
-  const autocompleteMovies = useMemo(() => {
+  const suggestions = useMemo(() => {
     return items.map((movie) => {
       const year = yearFromReleaseDate(movie.release_date)
       const genreText = (movie.genre_ids || [])
@@ -154,12 +154,12 @@ export function AutocompleteDropdown({
 
   return (
     <Dropdown $open={open} role="listbox" aria-label="Suggestions">
-      {isLoading && autocompleteMovies.length === 0 ? (
+      {isLoading && suggestions.length === 0 ? (
         <LoadingState text="Loading suggestions..." compact />
       ) : isEmpty ? (
         <StateRow>No movies found</StateRow>
       ) : null}
-      {autocompleteMovies.map((data, idx) => (
+      {suggestions.map((data, idx) => (
         <Item
           key={data.movie.id}
           type="button"

@@ -4,7 +4,7 @@ import {
   LANGUAGE_OPTIONS,
   REGION_OPTIONS,
 } from '../../../features/search/constants'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const Root = styled.div`
   margin-top: 2rem;
@@ -109,6 +109,9 @@ function updateFilters(
   return { ...prev, ...patch }
 }
 
+const MIN_YEAR = 1900
+const MAX_YEAR = new Date().getFullYear()
+
 export function AdvancedFilters({
   filters,
   onFiltersChange,
@@ -121,13 +124,12 @@ export function AdvancedFilters({
   onOpenChange: (open: boolean) => void
 }) {
   const [draftYear, setDraftYear] = useState(filters.year?.toString() ?? '')
+  const [isPageEditing, setIsPageEditing] = useState(false)
   const [draftReleaseYear, setDraftReleaseYear] = useState(
     filters.primaryReleaseYear?.toString() ?? '',
   )
   const [draftPage, setDraftPage] = useState(filters.page.toString())
-
-  const MIN_YEAR = 1900
-  const MAX_YEAR = new Date().getFullYear()
+  const pageValue = isPageEditing ? draftPage : filters.page.toString()
 
   function parseValidYear(value: string) {
     if (!value) return undefined
@@ -143,10 +145,6 @@ export function AdvancedFilters({
   const isReleaseYearInvalid =
     draftReleaseYear.length >= 4 &&
     parseValidYear(draftReleaseYear) === undefined
-
-  useEffect(() => {
-    setDraftPage(filters.page.toString())
-  }, [filters.page])
 
   return (
     <Root>
@@ -245,13 +243,17 @@ export function AdvancedFilters({
             type="text"
             inputMode="numeric"
             min={1}
-            value={draftPage}
+            value={pageValue}
+            onFocus={() => {
+              setIsPageEditing(true)
+              setDraftPage(filters.page.toString())
+            }}
             onChange={(e) => {
               const value = e.target.value
               if (!/^\d*$/.test(value)) return
               setDraftPage(value)
-              const page = Number(value)
               if (!value) return
+              const page = Number(value)
               if (!Number.isInteger(page)) return
               if (page < 1) return
               onFiltersChange(
@@ -261,6 +263,7 @@ export function AdvancedFilters({
               )
             }}
             onBlur={() => {
+              setIsPageEditing(false)
               if (!draftPage) {
                 setDraftPage(filters.page.toString())
               }

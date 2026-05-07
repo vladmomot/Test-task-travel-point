@@ -47,8 +47,6 @@ const SearchInput = styled.input`
   }
 `
 
-const SUGGETIONS_MAX_COUNT = 5
-
 const HistoryRow = styled.div`
   margin-top: 0.9rem;
   display: flex;
@@ -105,6 +103,7 @@ const ClearHistoryButton = styled.button`
     align-self: flex-end;
   }
 `
+const SUGGETIONS_MAX_COUNT = 5
 
 export function SearchSection({
   query,
@@ -159,9 +158,9 @@ export function SearchSection({
   }, [open])
 
   const selectItem = (idx: number) => {
-    const m = items[idx]
-    if (!m) return
-    onQueryChange(m.title)
+    const movie = items[idx]
+    if (!movie) return
+    onQueryChange(movie.title)
     setOpen(false)
     setActiveIndex(-1)
   }
@@ -237,10 +236,7 @@ export function SearchSection({
               </HistoryChip>
             ))}
           </HistoryList>
-          <ClearHistoryButton
-            type="button"
-            onClick={onClearHistory}
-          >
+          <ClearHistoryButton type="button" onClick={onClearHistory}>
             Clear history
           </ClearHistoryButton>
         </HistoryRow>

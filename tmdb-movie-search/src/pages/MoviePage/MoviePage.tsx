@@ -37,16 +37,31 @@ const Card = styled.section`
 `
 
 const Poster = styled.div`
+  position: relative;
   width: 100%;
   min-height: 420px;
   border-radius: 18px;
   overflow: hidden;
   background: #e5e7eb;
 
+  &::before {
+    content: '🎬';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    opacity: 0.3;
+  }
+
   img {
+    position: relative;
+    z-index: 1;
+
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 `
 

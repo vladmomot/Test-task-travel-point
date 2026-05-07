@@ -13,6 +13,16 @@ export type TmdbMovie = {
   genre_ids: number[]
 }
 
+export type SearchMoviesParams = {
+  query: string
+  language?: string
+  page?: number
+  include_adult?: boolean
+  region?: string
+  year?: number
+  primary_release_year?: number
+}
+
 export type TmdbSearchMovieResponse = {
   page: number
   results: TmdbMovie[]

@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AppProviders } from './app/providers/AppProviders'
+import { LoadingState } from './pages/SearchPage/components/ui/LoadingState'
 
 const SearchPage = lazy(() => import('./pages/SearchPage/SearchPage'))
 const MoviePage = lazy(() => import('./pages/MoviePage/MoviePage'))
@@ -8,7 +9,7 @@ const MoviePage = lazy(() => import('./pages/MoviePage/MoviePage'))
 export default function App() {
   return (
     <AppProviders>
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingState text="Loading page..." />}>
         <Routes>
           <Route path="/" element={<SearchPage />} />
           <Route path="/movie/:movieId" element={<MoviePage />} />

@@ -69,13 +69,10 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
     <Wrapper role="alert">
       <Card>
         <Title>Something went wrong</Title>
-
         <Text>The app hit an unexpected React error.</Text>
-
         <Button type="button" onClick={resetErrorBoundary}>
           Try again
         </Button>
-
         {import.meta.env.DEV ? <Details>{errorMessage}</Details> : null}
       </Card>
     </Wrapper>
