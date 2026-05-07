@@ -8,6 +8,7 @@ The app allows users to search for movies, browse suggestions in real time, appl
 ## Features
 
 * 🔍 Movie search by title
+* 🔗 Search results persisted in the URL
 * ⚡ Real-time autocomplete suggestions
 * 🎬 Movie cards with posters, ratings, genres, and release year
 * 🎬 Movie details page
