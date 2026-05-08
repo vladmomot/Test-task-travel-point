@@ -18,6 +18,7 @@ The app allows users to search for movies, browse suggestions in real time, appl
   * Release year
   * Page
   * Adult content toggle
+* 🧭 `MoviePreferencesContext` for global search preferences
 * 📄 Pagination support
 * 🕘 Recent search history stored in localStorage
 * ⏳ Multiple loading states:
@@ -195,6 +196,7 @@ The project includes tests for:
 * search section
 * filters
 * search history hook
+* movie preferences hook
 
 ---
 
