@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from '../../shared/ui/ErrorBoundary/ErrorBoundary'
 import { GlobalStyle } from '../styles/GlobalStyle'
+import { MoviePreferencesProvider } from '../../features/preferences/context/MoviePreferencesContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +21,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <ErrorBoundary>
       <GlobalStyle />
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
+        <MoviePreferencesProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </MoviePreferencesProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   )
